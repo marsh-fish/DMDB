@@ -158,8 +158,7 @@ $documents_json = json_encode($documents);
                             <a href="user.php?user_id=${item.user_id}">${itemOwner}</a>
                         </td>
                         <td>
-                            <a href="${itemLink}" download="${downloadName}">Download</a> |
-                            <a href="detail.php?document_id=${item.document_id}">Details >></a>
+                            <a href="${itemLink}" download="${downloadName}">Download</a>
                         </td>
                     </tr>
                 `;

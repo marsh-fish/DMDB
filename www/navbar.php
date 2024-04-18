@@ -11,8 +11,8 @@
         <?php if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
         <li class="nav-item ms-5">
             <!-- 使用Font Awesome的user圖標 -->
-            <a class="nav-link" href="./user.php?user_id=<?php echo htmlspecialchars($_SESSION["username"]); ?>">
-            <i class="fa fa-user" aria-hidden="true"><?= $_SESSION["username"]; ?></i>
+            <a class="nav-link" href="./user.php?user_id=<?php echo htmlspecialchars($_SESSION["user_id"]); ?>">
+            <i class="fa fa-user" aria-hidden="true"><?= $_SESSION["user_id"]; ?></i>
             </a>
         </li>
         <?php endif; ?>
