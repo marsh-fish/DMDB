@@ -10,17 +10,6 @@ if(!isset($_SESSION["loggedin"])){
     exit;
 }
 
-$userIp = "";
-if (!empty($_SERVER["HTTP_CLIENT_IP"])){
-    $userIp = $_SERVER["HTTP_CLIENT_IP"];
-}elseif(!empty($_SERVER["HTTP_X_FORWARDED_FOR"])){
-    $userIp = $_SERVER["HTTP_X_FORWARDED_FOR"];
-}else{
-    $userIp = $_SERVER["REMOTE_ADDR"];
-}
-$inputJSON = file_get_contents('php://input');
-$input = json_decode($inputJSON, TRUE);
-
 // 初始化一個變量來存儲查詢結果
 $documents = [];
 $keyword = $_POST['keyword'] ?? '';  // 安全地獲取 POST 提交的 keyword

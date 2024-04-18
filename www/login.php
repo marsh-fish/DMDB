@@ -1,5 +1,7 @@
 <?php
 require_once(__DIR__ . '/dbconfig.php');
+include 'toast.php';
+
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -10,6 +12,8 @@ if(isset($_SESSION["loggedin"])){
     exit;
 }
 
+include 'toast.html';
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     // 取得 POST 過來的資料
     $username=mb_convert_case($_POST["username"], MB_CASE_UPPER, "UTF-8");
@@ -17,33 +21,32 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $password_hash=password_hash($password,PASSWORD_DEFAULT);
 
     // 以帳號進資料庫查詢
-    $sql = "SELECT `username`, `password`, `name`, `email` FROM `member` WHERE `username`=?";
+    $sql = "SELECT `user_id`, `username`, `password`, `name`, `email` FROM `member` WHERE `username`=?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $result_username, $result_password, $result_name, $result_email);
-    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_bind_result($stmt, $result_user_id, $result_username, $result_password, $result_name, $result_email);
+    $fetched = mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
 
-    // 驗證密碼
-    if(password_verify($password, $result_password)){
+    // 驗證密碼，先檢查是否有查詢到資料
+    if($fetched && password_verify($password, $result_password)){
         // 密碼通過驗證
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         // 把資料存入 Session
         $_SESSION["loggedin"] = true;
-        $_SESSION["user_id"] = $result_username;
-        $_SESSION["username"] = $result_name;
+        $_SESSION["user_id"] = $result_user_id;
+        $_SESSION["username"] = $result_username;
+        $_SESSION["name"] = $result_name;
         $_SESSION["email"] = $result_email;
         // 轉跳到會員頁面
         header("location: ./welcome.php");
         exit;
     }else{
         // 密碼驗證失敗
-        $test = password_hash("123",PASSWORD_DEFAULT);
-        echo '<script>alert("帳號或密碼錯誤.\nIncorrect ID or Password.");</script>';
-        echo '<script>console.log("'.$test.'");</script>';
+        showToastOnLoad('帳號或密碼錯誤. Incorrect ID or Password.', "danger");
     }
 }
 

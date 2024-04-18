@@ -40,11 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 清理和賦值表單數據
     $title = $conn->real_escape_string($_POST['title']);
     $author = $conn->real_escape_string($_POST['author']);
-    $page_number = intval($_POST['page_number']);
-    $publish_date = $_POST['publish_date'] ? $conn->real_escape_string($_POST['publish_date']) : null;
-    $source = $conn->real_escape_string($_POST['source']);
-    $vol = intval($_POST['vol']);
-    $no = intval($_POST['no']);
+    $page_number = filter_input(INPUT_POST, 'page_number', FILTER_VALIDATE_INT, ['options' => ['default' => NULL]]);
+    $publish_date = empty($_POST['publish_date']) ? NULL : $_POST['publish_date'];
+    $source = filter_input(INPUT_POST, 'source', FILTER_SANITIZE_SPECIAL_CHARS, ['options' => ['default' => NULL]]);
+    $vol = filter_input(INPUT_POST, 'vol', FILTER_VALIDATE_INT, ['options' => ['default' => NULL]]);
+    $no = filter_input(INPUT_POST, 'no', FILTER_VALIDATE_INT, ['options' => ['default' => NULL]]);
     $public = ($_POST['visibility'] == 'public') ? 1 : 0;
 
     // 更新數據庫記錄
@@ -87,8 +87,8 @@ if (isset($_GET['toast_message']) && isset($_GET['toast_type'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Custom styles for this template -->
-    <link href="background.css" rel="stylesheet">
-    <title>Upload</title>
+    <link href="navbar.css" rel="stylesheet">
+    <title>Edit</title>
 </head>
 
 <body class="text-center">
