@@ -22,26 +22,8 @@ $hasError = false;  // 用於標記是否發生錯誤
 $errors = [];  // 錯誤收集陣列
 $solutions = [];  // 解決方法收集陣列
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['inputData'])) {
-    // Handle the second POST request sent by the JavaScript function 'ok()'
-    // Retrieve the input data sent by the JavaScript function
-    $inputData = $_POST['inputData'];
-
-    // Process the input data as needed
-    // For example, you can store it in a session variable or perform other actions
-
-    $sql = "INSERT INTO category (user_id, category_name) VALUES (?, ?)";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "is", $_SESSION['user_id'], $inputData);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-
-    // Stop further execution to prevent the HTML content below from being output
-    exit();
-}
-
 // TODO: 處理表單提交
-if($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['inputData'])) {
+if($_SERVER["REQUEST_METHOD"] == "  ") {
     // TODO: 判斷表單資訊正確性
     // TODO: 測試 alert 所有資訊
     // 測試 alert 所有資訊，這裡假設已經通過前面的 user_id 檢查
@@ -148,7 +130,6 @@ if ($result) {
     $categories = [];
 }
 
-
 // Close connection
 mysqli_close($conn);
 
@@ -171,8 +152,6 @@ if (isset($_GET['toast_message']) && isset($_GET['toast_type'])) {
     <!-- Font-Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Custom styles for this template -->
-    <link href="upload.css" rel="stylesheet">
     <link href="navbar.css" rel="stylesheet">
     <title>Upload</title>
 </head>
@@ -192,13 +171,11 @@ if (isset($_GET['toast_message']) && isset($_GET['toast_type'])) {
               <input type="text" class="form-control mb-2" name="title" placeholder="Title" required>
             </div>
             <div class="form-group">
-                <select class="form-control mb-2" id="categoriesSelect" name="categories[]" required multiple>
-                    <!-- Populate options with categories fetched from database -->
+                <select class="form-control mb-2" name="category">
+                    <option value="">Select Category</option>
                     <?php foreach ($categories as $category): ?>
                         <option value="<?php echo $category['category_id']; ?>"><?php echo $category['category_name']; ?></option>
                     <?php endforeach; ?>
-                    <!-- Empty option for appending new categories -->
-                    <option value="new" id="addCategory" onclick="customAlert.alert('Enter the name of the new category:','Add New Category')">Add New Category...</option>
                 </select>
             </div>
             <div class="form-group">
@@ -243,87 +220,7 @@ if (isset($_GET['toast_message']) && isset($_GET['toast_type'])) {
     </div>
   </div>
 </div>
-    <script>
-    function CustomAlert() {
-        this.alert = function(message, title, callback) {
-            document.body.innerHTML = document.body.innerHTML + '<div id="dialogoverlay"></div><div id="dialogbox" class="slit-in-vertical"><div><div id="dialogboxhead"></div><div id="dialogboxbody"></div><div id="dialogboxfoot"></div></div></div>';
 
-            let dialogoverlay = document.getElementById('dialogoverlay');
-            let dialogbox = document.getElementById('dialogbox');
-
-            let winH = window.innerHeight;
-            dialogoverlay.style.height = winH + "px";
-
-            dialogbox.style.top = "100px";
-
-            dialogoverlay.style.display = "block";
-            dialogbox.style.display = "block";
-
-            document.getElementById('dialogboxhead').style.display = 'block';
-
-            if (typeof title === 'undefined') {
-                document.getElementById('dialogboxhead').style.display = 'none';
-            } else {
-                document.getElementById('dialogboxhead').innerHTML = title;
-            }
-            document.getElementById('dialogboxbody').innerHTML = '<p>' + message + '</p><input type="text" id="textInput">';
-            document.getElementById('dialogboxfoot').innerHTML = '<button class="pure-material-button-contained active" onclick="customAlert.ok(' + (callback ? callback : '') + ')">OK</button><button class="pure-material-button-contained active" onclick="customAlert.cancel()">Cancel</button>';
-        }
-
-        this.ok = function(callback) {
-            var inputText = document.getElementById('textInput').value;
-            console.log("Input text:", inputText);
-
-            // Create a new XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
-
-            // Configure the request
-            xhr.open('POST', 'upload.php', true);
-
-            // Set up the callback function for when the request completes
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    // Request was successful
-                    console.log('Upload successful');
-                    // Reload the current page
-                    location.reload();
-                } else {
-                    // Request failed
-                    console.error('Upload failed');
-                    // Handle the error gracefully
-                }
-            };
-
-            // Set up the callback function for if there's an error with the request
-            xhr.onerror = function() {
-                console.error('Request failed');
-                // Handle the error gracefully
-            };
-
-            // Set the data to be sent in the request body
-            var formData = new FormData();
-            formData.append('inputData', inputText);
-
-            // Send the request with the input data
-            xhr.send(formData);
-
-            // Hide the dialog box and overlay
-            document.getElementById('dialogbox').style.display = "none";
-            document.getElementById('dialogoverlay').style.display = "none";
-
-            // Execute the callback if provided
-            if (callback) callback(inputText);
-        }
-
-        this.cancel = function() {
-            document.getElementById('dialogbox').style.display = "none";
-            document.getElementById('dialogoverlay').style.display = "none";
-        }
-    }
-
-    let customAlert = new CustomAlert();
-
-    </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 

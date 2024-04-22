@@ -12,7 +12,7 @@ if(isset($_SESSION["loggedin"])){
     exit;
 }
 
-include 'toast.html';
+
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     // 取得 POST 過來的資料
@@ -52,7 +52,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 // Close connection
 mysqli_close($conn);
-	
+include 'toast.html';
 ?>
 <!doctype html>
 <html lang="zh-hant">
