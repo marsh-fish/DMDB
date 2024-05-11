@@ -1,0 +1,48 @@
+/* General styles for the body */
+body {
+    font-family: 'Open Sans', sans-serif;  /* Use a readable, sans-serif font */
+    font-size: 20px;  /* Set a larger font size for readability */
+    padding-top: 70px;  /* Adjust padding to avoid overlapping with fixed navbar */
+    background-color: #f7f7f7;  /* Light background for better contrast */
+}
+
+/* Style for the main heading */
+h1 {
+    font-size: 50px;  /* Larger font size for the main heading */
+    color: #333;  /* Dark color for better contrast */
+    text-align: center;  /* Center the heading */
+    margin-bottom: 20px;  /* Add space below the heading */
+}
+
+/* Styles for the category list */
+ul {
+    list-style-type: none;  /* Remove default list bullets */
+    margin: 0;
+    padding: 0;
+}
+
+/* Styles for each category item */
+li {
+    padding: 15px;  /* Add padding around each category item */
+    border-bottom: 1px solid #ddd;  /* Light border to separate items */
+}
+
+/* Styling for category names */
+span {
+    font-size: 24px;  /* Larger font size for category names */
+    cursor: pointer;  /* Indicate that these are clickable */
+    color: #555;  /* Use a moderate color for the category text */
+    transition: color 0.3s;  /* Smooth transition for hover effects */
+}
+
+/* Hover effect for category names */
+span:hover {
+    color: #0011fa;  /* Darker color on hover */
+}
+
+/* Styling for additional information (collapsed by default) */
+div[id^="category-"] {
+    display: none;  /* Initially hidden */
+    font-size: 18px;  /* Slightly smaller font size for details */
+    margin-left: 20px;  /* Indentation for visual separation */
+}

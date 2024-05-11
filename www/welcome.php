@@ -62,56 +62,62 @@ $documents_json = json_encode($documents);
 </head>
 
 <body>
+    <div class="snap-container">
+        <section class="snap-section" id="screen1">
 
-    <section id="screen1">
+        <h1>DMDB</h1>
+        <h3>Document Management in Datebase</h3>
 
-    <h1>DMDB</h1>
-    <h3>Document Management in Datebase</h3>
+        <?php include 'navbar.php'; ?>
 
-    <?php include 'navbar.php'; ?>
+        </section>
 
-    </section>
-
-    <section id="screen2">
-        <table class="table table-striped zotero-table" id="zotero-table">
-        <thead class="thead-dark">
-            <tr>
-            <th>Title</th>
-            <th>Author(s)</th>
-            <th>Date</th>
-            <th>Creator</th>
-            <th>Options</th>
-            </tr>
-        </thead>
-        <tbody id="content" class="zotero-content">
-            <tr>
-                <td><a href="#">test</a></td>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-            </tr>
-        </tbody>
-        </table>
-        <p class="prev-next">
-            <button id="loadPrev" class="prev-next-btn" disabled>Previous</button>
-            <button id="loadNext" class="prev-next-btn" disabled>Next</button>
-        </p>
-    </section>
-    
-    <section id="screen3"><?php include 'bongo-cat.php'; ?></section>
-
+        <section class="snap-section" id="screen2">
+            <table class="table table-striped zotero-table" id="zotero-table">
+            <thead class="thead-dark" height="70">
+                <tr>
+                <th>Title</th>
+                <th>Author(s)</th>
+                <th>Date</th>
+                <th>Creator</th>
+                <th>Options</th>
+                </tr>
+            </thead>
+            <tbody id="content" class="zotero-content">
+                <tr>
+                    <td><a href="#">test</a></td>
+                    <td>test</td>
+                    <td>test</td>
+                    <td>test</td>
+                </tr>
+            </tbody>
+            </table>
+            <p class="prev-next">
+                <button id="loadPrev" class="prev-next-btn" disabled>Previous</button>
+                <button id="loadNext" class="prev-next-btn" disabled>Next</button>
+            </p>
+        </section>
+        
+        <section class="snap-section" id="screen3"><?php include 'bongo-cat.php'; ?></section>
+    </div>
     <script>
-        $(document).ready(function(){
-        $(window).bind('scroll', function() {
-        var navHeight = $( window ).height() - 70;
-                if ($(window).scrollTop() > navHeight) {
+        $(document).ready(function() {
+            var snapContainer = $('.snap-container'); // Ensure this is the scrollable container
+            
+            snapContainer.on('scroll', function() {
+                var navHeight = snapContainer.height() - 70; // Adjust as needed
+                var scrollPosition = snapContainer.scrollTop(); // Get scroll position
+                
+                if (scrollPosition > navHeight) {
                     $('nav').addClass('fixed');
-                }
-                else {
+                } else {
                     $('nav').removeClass('fixed');
                 }
             });
         });
+
+
+
         let documents = <?php echo $documents_json; ?>;
         let prevBtn = document.getElementById("loadPrev");
         let nextBtn = document.getElementById("loadNext");

@@ -5,8 +5,8 @@
 <nav>
     <ul>
         <li class="nav-item ms-5"><a href="./welcome.php#">Home</a></li>
-        <li class="nav-item"><a href="./upload.php">Upload</a></li>
-        <li class="nav-item"><a href="#">Team</a></li>
+        <li class="nav-item"><a href="./upload.php#">Upload</a></li>
+        <li class="nav-item"><a href="./category.php#">category</a></li>
         <li class="nav-item me-5"><a href="#">Contact</a></li>
         <?php if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
         <li class="nav-item ms-5">
