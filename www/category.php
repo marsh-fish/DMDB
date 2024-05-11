@@ -15,6 +15,61 @@ if (!isset($_SESSION["loggedin"]) || !isset($_SESSION["user_id"])) {
 // Get the current user ID from session
 $current_user_id = $_SESSION["user_id"];
 
+// Handle delete category request
+if (isset($_POST['delete_category_id'])) {
+    $deleteCategoryId = $_POST['delete_category_id'];
+
+    // Step 1: Verify user ownership of the category
+    $sql = "SELECT user_id FROM category WHERE category_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $deleteCategoryId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    if ($row && $row['user_id'] == $_SESSION['user_id']) {
+        // User verification successful
+        $conn->begin_transaction();  // Start a transaction
+        try {
+            // Step 2: Delete from `category` table
+            $sql = "DELETE FROM category WHERE category_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $deleteCategoryId);
+            $deleteCategorySuccess = $stmt->execute();
+            $stmt->close();
+
+            if ($deleteCategorySuccess) {
+                // Step 3: Delete from `document_category` table only if Step 2 is successful
+                $sql = "DELETE FROM document_category WHERE category_id = ?";
+                $stmt = $conn->prepare($sql);
+                if ($stmt) {
+                    $stmt->bind_param("i", $deleteCategoryId);
+                    if ($stmt->execute()) {
+                        $conn->commit();  // Commit the transaction
+                        showToastOnLoad("Category deleted successfully.", "success");
+                    } else {
+                        $conn->rollback();  // Rollback the transaction in case of error
+                        showToastOnLoad("Failed to delete category.", "danger");
+                    }
+                    $stmt->close();
+                } else {
+                    $conn->rollback();  // Rollback the transaction in case of error
+                    showToastOnLoad("Failed to prepare the SQL statement.", "danger");
+                }
+            } else {
+                throw new Exception("Failed to delete category.");
+            }
+        } catch (Exception $e) {
+            $conn->rollback();  // Rollback the transaction on error
+            // echo "Error: " . $e->getMessage();
+            showToastOnLoad("Failed to delete category.", "danger");
+        }
+    } else {
+        echo "Error: You do not have permission to delete this category.";
+        showToastOnLoad("Delete fail", "danger");
+    }
+}
+
 // Fetch all categories
 $categories = [];
 try {
@@ -48,11 +103,13 @@ try {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-hant">
 <head>
     <meta charset="UTF-8">
+    
     <link href="navbar.css" rel="stylesheet">
     <link href="category.css" rel="stylesheet">
+    <link href="upload.css" rel="stylesheet">
     <title>Categories</title>
     <script>
         function toggleCategory(categoryId) {
@@ -80,7 +137,7 @@ try {
         function fetchDocuments(categoryId) {
             // AJAX call to fetch documents for this category
             const xhr = new XMLHttpRequest();
-            xhr.open("GET", `fetch_documents.php?category_id=${categoryId}`, true);
+            xhr.open("GET", `fetch_documents.php?category_id=${categoryId}&is_user=${false}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     document.getElementById(`category-${categoryId}`).innerHTML = xhr.responseText;
@@ -92,7 +149,7 @@ try {
         function fetchUserDocuments(categoryId) {
             // AJAX call to fetch documents for this category
             const xhr = new XMLHttpRequest();
-            xhr.open("GET", `fetch_documents.php?category_id=${categoryId}`, true);
+            xhr.open("GET", `fetch_documents.php?category_id=${categoryId}&is_user=${true}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     document.getElementById(`usercategory-${categoryId}`).innerHTML = xhr.responseText;
@@ -104,11 +161,17 @@ try {
 </head>
 <body>
     <?php include 'navbar.php'; ?>  <!-- Include the navbar -->
+    <?php include 'customalert.php'; ?>
 
     <h1>Categories</h1>
 
     <!-- Section for user-created categories ("My") -->
-    <h2>My Categories</h2>
+    <h2>My Categories
+        <button class="btn btn-primary ml-3" onclick="customAlert.alert('Enter the name of the new category:','Add New Category')" style="cursor: pointer;">
+            New
+        </button>
+    </h2>
+    
     <ul>
     <?php foreach ($user_categories as $user_category): ?>
         <?php
@@ -122,10 +185,14 @@ try {
                 style="cursor: pointer; font-weight: bold;"
             >
                 <?php echo $category_name; ?>
+                
             </span>
+            <button type="submit" name="delete_category_id" value="<?= $category_id ?>" class="btn btn-secondary ml-3" onclick="customAlert.alert('','Add You Sure?', <?= $category_id ?>)" style="cursor: pointer;">
+                Delete
+            </button>
             <div id="usercategory-<?php echo $category_id; ?>" style="display: none;">
                 <!-- Document list will be filled by AJAX -->
-                Loding...
+                Loading...
             </div>
         </li>
     <?php endforeach; ?>
@@ -148,11 +215,11 @@ try {
             </span>
             <div id="category-<?php echo $category_id; ?>" style="display: none;">
                 <!-- Document list will be filled by AJAX -->
-                Loding...
+                Loading...
             </div>
         </li>
     <?php endforeach; ?>
     </ul>
-
+    
 </body>
 </html>

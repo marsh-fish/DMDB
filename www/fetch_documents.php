@@ -8,11 +8,20 @@ if (!isset($_GET['category_id']) || !is_numeric($_GET['category_id'])) {
 }
 
 $category_id = intval($_GET['category_id']);  // Convert to integer for safety
+$is_user = $_GET['is_user'] === 'true';
 
-$sql = 'SELECT document.title, document.author, document.publish_date, document.vol, document.no, document.page_number, document.source
+if ($is_user) {
+    $sql = 'SELECT document.title, document.document_id, document.author, document.publish_date, document.vol, document.no, document.page_number, document.source
         FROM document_category
         JOIN document ON document_category.document_id = document.document_id
         WHERE document_category.category_id = ?';
+}
+else {
+    $sql = 'SELECT document.title, document.document_id, document.author, document.publish_date, document.vol, document.no, document.page_number, document.source
+        FROM document_category
+        JOIN document ON document_category.document_id = document.document_id
+        WHERE document_category.category_id = ? AND document.public = 1';
+}
 
 try {
     $stmt = $conn->prepare($sql);
@@ -45,7 +54,8 @@ try {
                 echo "pp. " . htmlspecialchars($document['page_number'], ENT_QUOTES, 'UTF-8') . ", ";
                 echo htmlspecialchars($document['publish_date'], ENT_QUOTES, 'UTF-8');
             }
-
+            
+            echo '<a href="detail.php?document_id=' . htmlspecialchars($document['document_id'], ENT_QUOTES, 'UTF-8') . '"> Details >></a>';
             echo "</li>";
         }
         echo "</ul>";

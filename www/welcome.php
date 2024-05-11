@@ -136,6 +136,7 @@ $documents_json = json_encode($documents);
             // Loop through the documents for the current page
             pageDocuments.forEach(item => {
                 let itemTitle = item.title;
+                let itemId = item.document_id;
                 let itemLink = item.path;
                 let itemCreator = item.author;
                 let itemDate = item.publish_date;
@@ -146,7 +147,7 @@ $documents_json = json_encode($documents);
                 // Append item details to content
                 content.innerHTML += `
                     <tr>
-                        <td><a href="${itemLink}">${itemTitle}</a></td>
+                        <td><a href="detail.php?document_id=${itemId}">${itemTitle}</a></td>
                         <td>${itemCreator}</td>
                         <td>${itemDate}</td>
                         <td>
